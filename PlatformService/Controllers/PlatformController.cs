@@ -27,5 +27,18 @@ namespace PlatformService.Controllers
 
             return Ok(platformToReturn);
         }
+
+        [HttpGet("{id:guid}")]
+        public IActionResult GetPlatform(Guid id)
+        {
+            var platformEntity = _repository.GetPlatformById(id);
+
+            if (platformEntity == null)
+                return NotFound();
+
+            var platformToReturn = _mapper.Map<PlatformDto>(platformEntity);
+
+            return Ok(platformToReturn);
+        }
     }
 }
