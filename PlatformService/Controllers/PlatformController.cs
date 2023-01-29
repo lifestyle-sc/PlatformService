@@ -48,6 +48,9 @@ namespace PlatformService.Controllers
             if (platformForCreation == null)
                 return BadRequest("The platformForCreationDto object sent by the client is null.");
 
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
             var platformEntity = _mapper.Map<Platform>(platformForCreation);
 
             _repository.CreatePlatform(platformEntity);
