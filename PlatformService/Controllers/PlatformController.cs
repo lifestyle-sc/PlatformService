@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PlatformService.Data;
 using PlatformService.Dtos;
+using PlatformService.Models;
 
 namespace PlatformService.Controllers
 {
@@ -28,7 +29,7 @@ namespace PlatformService.Controllers
             return Ok(platformToReturn);
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetPlatform")]
         public IActionResult GetPlatform(Guid id)
         {
             var platformEntity = _repository.GetPlatformById(id);
@@ -39,6 +40,22 @@ namespace PlatformService.Controllers
             var platformToReturn = _mapper.Map<PlatformDto>(platformEntity);
 
             return Ok(platformToReturn);
+        }
+
+        [HttpPost]
+        public IActionResult CreatePlatform([FromBody] PlatformForCreationDto platformForCreation)
+        {
+            if (platformForCreation == null)
+                return BadRequest("The platformForCreationDto object sent by the client is null.");
+
+            var platformEntity = _mapper.Map<Platform>(platformForCreation);
+
+            _repository.CreatePlatform(platformEntity);
+            _repository.SaveChanges();
+
+            var platformToReturn = _mapper.Map<PlatformDto>(platformEntity);
+
+            return CreatedAtRoute("GetPlatform", new { Id = platformToReturn.Id }, platformToReturn);
         }
     }
 }
